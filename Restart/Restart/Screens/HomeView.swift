@@ -11,6 +11,7 @@ struct HomeView: View {
     // get saved local storage data
     
     @AppStorage("onboarding") var isOnBoardingViewActive: Bool = false
+    @State private var isAnimation: Bool = false
     
     var body: some View {
         VStack {
@@ -21,6 +22,13 @@ struct HomeView: View {
                 CircleGroupView(ShapeColor: .gray, ShapeOpacity: 0.1)
                 Image("character-2").resizable().scaledToFit()
                     .padding()
+                    .offset(y: isAnimation ? 35 : -35)
+                    .animation(
+                        Animation.easeInOut(duration: 4)
+                            .repeatForever()
+                            ,value: isAnimation
+                    )
+                        
             }
             // center
             Text("The time that leads to mastery is dependent on the intensity of our focus.")
@@ -38,7 +46,11 @@ struct HomeView: View {
             Button {
                 //actions here
                 
-                isOnBoardingViewActive = true
+                withAnimation{
+                    playSound(sound: "success", type: "m4a")
+                    isOnBoardingViewActive = true
+                }
+                
                 
             } label: {
                 Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
@@ -53,6 +65,11 @@ struct HomeView: View {
             .controlSize(.large)
 
         }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5,execute: {
+                isAnimation = true
+            }
+        )}
     }
 }
 
